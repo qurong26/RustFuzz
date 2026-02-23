@@ -1,0 +1,196 @@
+Body:
+    memberContent  mainMethodDeclaration
+memberContent:
+    GlobalVariable  fieldDeclaration* fieldDeclaration* fieldDeclaration* structDeclaration*  methodDeclaration methodDeclaration*
+structDeclaration:
+    STRUCT identifier structBody
+structBody:
+    '<T> {' structMemberContent* '}'
+structMemberContent:
+    fieldDeclaration* methodDeclaration*
+methodDeclaration:
+    'fn' identifier  formalParameters  '->' typeTypeOrVoid methodBody
+mainMethodDeclaration:
+    'fn main()' mainMethodBody
+methodBody:
+    block
+mainMethodBody:
+    mainMethodBlock
+typeTypeOrVoid:
+    typeType
+    '()'
+fieldDeclaration:
+    'let' identifier ':' primitiveType ';'  identifier ('=' expression) ';'
+formalParameters:
+    '(' ( formalParameterList?) ')'
+formalParameterList:
+    formalParameter (',' formalParameter)* (',' lastFormalParameter)?
+    lastFormalParameter
+formalParameter:
+    'mut' methodVarname ':' primitiveType
+lastFormalParameter:
+    'mut' methodVarname ':' primitiveType
+methodVarname:
+    identifier
+integerLiteral:
+    integer
+shortLiteral:
+    shortInteger
+longLiteral:
+    longInteger
+block:
+    '{' 'unsafe {' ( localVariableDeclaration ';' )* ( localVariableDeclaration ';' )*  '}' statement ExpressionInBlock blockStatement '}'
+loopBlock:
+    '{' 'unsafe {' ( localVariableDeclaration ';' )* ( localVariableDeclaration ';' )*  '}' statement ExpressionInBlock blockStatement '}'
+mainMethodBlock:
+    '{'  mainContent '}'
+mainContent:
+    ' '
+blockStatement:
+    'unsafe {' localVariableDeclaration ';' '}'
+    statement
+    'unsafe {' (updateExpression ';')*  '}'
+localVariableDeclaration:
+    variableDeclaration
+variableDeclaration:
+    'let' identifier ':' primitiveType ';'  identifier ('=' expression)
+identifier:
+    IDENTIFIER
+statement:
+    ifStatement
+    forStatement
+    whileStatement
+    'unsafe {' (updateExpression ';')* '}'
+    'unsafe {' (updateExpression ';')* '}'
+whileStatement:
+    WHILE '(' boolParExpression ')' loopBlock
+ifStatement:
+    IF '(' boolExpression ')' block elseStatement?
+elseStatement:
+    ELSE block
+forStatement:
+    forControl  loopBlock
+forControl:
+    'let i:i32; for i in 1..3'
+updateExpression:
+    boolVarName  ('=' | '&=' | '|=' ) '(' boolExpression ')'
+    integerVarName ('=' | '+=' | '-=' | '*=') integerExpression
+    integerVarName '=' integerDivisor ('/' | '%') integerDivisor
+    integerVarName ( '^='  ) integerExpression
+    longVarName '=' longDivisor ('/' | '%') longDivisor
+    longVarName ('=' | '+=' | '-=' | '*=') longExpression
+    longVarName ( '^=' ) longExpression
+    shortVarName '=' shortDivisor ('/' | '%') shortDivisor
+    shortVarName ('=' | '+=' | '-=' | '*=' ) shortExpression
+    shortVarName ( '^=' ) shortExpression
+boolParExpression:
+    '(' integerVarName ')' ('<=' | '>=' | '>' | '<') '(' integerExpression ')'
+    '(' integerVarName ')' ('==' | '!=') '(' integerExpression ')'
+    '(' shortVarName ')' ('<=' | '>=' | '>' | '<') '(' shortExpression ')'
+    '(' shortVarName ')' ('==' | '!=') '(' shortExpression ')'
+    '(' longVarName ')' ('<=' | '>=' | '>' | '<') '(' longExpression ')'
+    '(' longVarName ')' ('==' | '!=') '(' longExpression ')'
+    '!'  '(' boolVarName ')'
+    '('  boolVarName ')' '&' '(' boolExpression ')'
+    '('  boolVarName ')' '|' '(' boolExpression ')'
+    '('  boolVarName ')' '&&' '(' boolExpression ')'
+    '('  boolVarName ')' OR  '(' boolExpression ')'
+    boolVarName
+boolExpression:
+    boolExpression
+    '(' integerExpression ')' ('<=' | '>=' | '>' | '<') '(' integerExpression ')'
+    '(' integerExpression ')' ('==' | '!=') '(' integerExpression ')'
+    '(' shortExpression ')' ('<=' | '>=' | '>' | '<') '(' shortExpression ')'
+    '(' shortExpression ')' ('==' | '!=') '(' shortExpression ')'
+    '(' longExpression ')' ('<=' | '>=' | '>' | '<') '(' longExpression ')'
+    '(' longExpression ')' ('==' | '!=') '(' longExpression ')'
+    '!'  '(' boolExpression ')'
+    '('  boolExpression ')' '&' '(' boolExpression ')'
+    '('  boolExpression ')' '|' '(' boolExpression ')'
+    '('  boolExpression ')' '&&' '(' boolExpression ')'
+    '('  boolExpression ')' OR  '(' boolExpression ')'
+    boolVarName
+    BOOL_LITERAL
+expression:
+    integerExpression
+    shortExpression
+    longExpression
+integerExpression:
+    '(' integerExpression ')'
+    integerVarName
+    integerLiteral
+    '(' ('+'|'-') integerVarName ')'
+    '(' integerVarName ('*'|'+'|'-') '(' integerExpression ')' ')'
+    '('  '(' integerExpression ')'  ('*'|'+'|'-') '(' integerExpression ')' ')'
+shortExpression:
+    '(' shortExpression ')'
+    shortVarName
+    shortLiteral
+longExpression:
+    '(' longExpression ')'
+    longVarName
+    longLiteral
+    '(' ('+'|'-') longVarName ')'
+    '(' longDivisor ('/'|'%')  '(' longDivisor ')' ')'
+    '(' longVarName ('*'|'+'|'-') '(' longExpression ')' ')'
+    '('  '(' longDivisor ')'  ('/'|'%')  '(' longDivisor ')' ')'
+    '('  '(' longExpression ')'  ('*'|'+'|'-') '(' longExpression ')' ')'
+longDivisor:
+    longVarName
+shortDivisor:
+    shortVarName
+integerDivisor:
+    integerVarName
+boolVarName:
+    identifier
+integerVarName:
+    identifier
+shortVarName:
+    identifier
+longVarName:
+    identifier
+typeType:
+    primitiveType
+primitiveType:
+    BOOL
+    I16
+    I32
+    I64
+integer:
+    [0-9]
+shortInteger:
+    [0-9]
+longInteger:
+    [0-9]
+GlobalVariable:
+    'GlobalVariable'
+BOOL:
+    'bool'
+ELSE:
+    'else'
+IF:
+    'if'
+WHILE:
+    'while'
+I16:
+    'i16'
+I32:
+    'i32'
+I64:
+    'i64'
+BOOL_LITERAL:
+    'true'
+    'false'
+STRUCT:
+    'struct'
+OR:
+    '||'
+IDENTIFIER:
+    Letter LetterOrDigit LetterOrDigit LetterOrDigit LetterOrDigit LetterOrDigit LetterOrDigit LetterOrDigit*
+LetterOrDigit:
+    Letter
+    Digit
+Digit:
+    [0-9]
+Letter:
+    [a-zA-Z]
